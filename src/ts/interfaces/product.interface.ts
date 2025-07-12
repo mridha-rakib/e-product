@@ -4,7 +4,6 @@ import { TDocument } from "@/ts/types/document.type";
 export interface IProduct extends TDocument {
   name: string;
   description: string;
-  //   category: TDocument["_id"];
   variants?: TDocument["_id"][];
 }
 
@@ -14,7 +13,7 @@ export interface IProductVariant extends TDocument {
   price: number;
   originalPrice?: number;
   discount?: number;
-  image: String;
+  image: string;
   stock: number;
   status?: "out-of-stock" | "in-stock";
 }

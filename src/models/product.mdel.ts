@@ -1,14 +1,18 @@
 import { model, Schema } from "mongoose";
 
+import { aggregatePaginatePlugin } from "@/config/paginate.config";
 import {
-  IProduct,
   IProductDocument,
   IProductMethods,
   IProductModel,
   IProductPaginateModel,
 } from "@/ts/interfaces/product.interface";
 
-const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
+const ProductSchema = new Schema<
+  IProductDocument,
+  IProductModel,
+  IProductMethods
+>(
   {
     name: {
       type: String,
@@ -20,12 +24,16 @@ const ProductSchema = new Schema<IProduct, IProductModel, IProductMethods>(
       required: true,
       trim: true,
     },
-    // category: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: "Category",
-    //   required: true,
-    // },
     variants: [{ type: Schema.Types.ObjectId, ref: "ProductVariant" }],
   },
   { timestamps: true, collation: { locale: "en" } }
+);
+
+ProductSchema.plugin(aggregatePaginatePlugin);
+
+ProductSchema.index({ name: "text", description: "text" });
+
+export const ProductModel = model<IProductDocument, IProductPaginateModel>(
+  "Product",
+  ProductSchema
 );

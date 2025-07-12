@@ -13,6 +13,7 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/compression": "^1.8.1",
+    "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/morgan": "^1.9.10",
@@ -30,11 +31,14 @@
   "dependencies": {
     "@t3-oss/env-core": "^0.13.8",
     "compression": "^1.8.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dayjs": "^1.11.13",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
     "mongoose": "^8.16.3",
+    "mongoose-aggregate-paginate-v2": "^1.1.4",
+    "mongoose-paginate-v2": "^1.9.1",
     "morgan": "^1.10.0",
     "multer": "^2.0.1",
     "pino": "^9.7.0",

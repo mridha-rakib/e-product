@@ -1,3 +1,4 @@
+import { ProductStatus } from "@/enums/product-status.enum";
 import { model, Schema } from "mongoose";
 
 const ProductVariantSchema = new Schema(
@@ -30,7 +31,13 @@ const ProductVariantSchema = new Schema(
     },
     image: {
       type: String,
-      required: [true, "Product image URL is required"],
+      required: [true, "Please add an image URL"],
+      validate: {
+        validator: function (v: any) {
+          return /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/.test(v);
+        },
+        message: (props: any) => `${props.value} is not a valid URL!`,
+      },
     },
     stock: {
       type: Number,
@@ -38,10 +45,7 @@ const ProductVariantSchema = new Schema(
       min: 0,
       default: 0,
     },
-    status: {
-      type: String,
-      enum: ["out-of-stock", "in-stock"],
-    },
+    status: ProductStatus,
   },
   { timestamps: true, collation: { locale: "en" } }
 );

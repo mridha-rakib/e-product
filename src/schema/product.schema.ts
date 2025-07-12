@@ -43,7 +43,6 @@ export const productGeneric = z.object({
     .trim()
     .min(1)
     .max(1000),
-  // category: objectIdGeneric,
   variants: z.array(productVariantGeneric),
 });
 

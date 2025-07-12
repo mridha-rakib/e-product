@@ -1,6 +1,20 @@
 import { model, Schema } from "mongoose";
 
-const CategorySchema = new Schema(
+// Hooks
+import { preUpdateCategoryHook } from "@/hooks/category.hook";
+
+// TS
+import {
+  ICategoryDocument,
+  ICategoryMethods,
+  ICategoryModel,
+} from "@/ts/interfaces/category.interface";
+
+const CategorySchema = new Schema<
+  ICategoryDocument,
+  ICategoryModel,
+  ICategoryMethods
+>(
   {
     name: {
       type: String,
@@ -17,4 +31,11 @@ const CategorySchema = new Schema(
   { timestamps: true, collation: { locale: "en" } }
 );
 
-export const CategoryModel = model("Category", CategorySchema);
+CategorySchema.pre("findOneAndUpdate", preUpdateCategoryHook);
+
+CategorySchema.index({ name: "text" });
+
+export const CategoryModel = model<ICategoryDocument>(
+  "Category",
+  CategorySchema
+);
