@@ -1,9 +1,10 @@
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import express, { type Application } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
+import httpStatus from "http-status";
 import { pinoLogger } from "@/middlewares/pino-logger";
 import env from "./env";
-import { errorHandler } from "./middlewares/error-handler.middleware";
+import { errorLogger } from "./middlewares/error-handler.middleware";
 import rootRoutes from "./routes/index.route";
 
 const app: Application = express();
@@ -15,16 +16,21 @@ app.use(pinoLogger());
 app.use(cors());
 
 app.use(env.BASE_PATH, rootRoutes);
-// app.use((req, _res, next) => {
-//   console.error(`Content-Length: ${req.headers["content-length"]}`);
-//   console.error(
-//     `Request Body Size: ${
-//       req.body ? Buffer.byteLength(JSON.stringify(req.body)) : 0
-//     }`
-//   );
-//   next();
-// });
 
-app.use(errorHandler);
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.status(httpStatus.NOT_FOUND).json({
+    success: false,
+    message: "Not Found",
+    errorMessages: [
+      {
+        path: req.originalUrl,
+        message: "API Not Found",
+      },
+    ],
+  });
+  next();
+});
+
+app.use(errorLogger);
 
 export default app;

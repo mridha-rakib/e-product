@@ -11,6 +11,7 @@ import {
   TCategoryQuery,
   TCategoryUpdate,
 } from "@/ts/types/category.type";
+import { ConflictError } from "@/utils/error-handler.utils";
 
 export const CategoryService = {
   async getCategories(query: TCategoryQuery) {
@@ -28,10 +29,18 @@ export const CategoryService = {
   },
 
   async createCategory(category: TCategoryCreate) {
-    const createdCategory = await CategoryModel.create({
-      ...category,
-    });
-    return createdCategory.toObject<ICategory>();
+    try {
+      const createdCategory = await CategoryModel.create({
+        ...category,
+      });
+      return createdCategory.toObject<ICategory>();
+    } catch (error: any) {
+      console.log(error);
+      if (error.code === 11000) {
+        throw new ConflictError("Category with this name already exists");
+      }
+      throw error;
+    }
   },
 
   async updateCategory(id: ICategory["_id"], category: TCategoryUpdate) {

@@ -6,13 +6,14 @@ import pinoHttp from "pino-http";
 
 const logger = pino({
   level: env.LOG_LEVEL || "info",
-  timestamp: () => `"time":"${dayjs().format("YYYY-MM-DD HH:mm:ss")}"`,
   ...(env.NODE_ENV !== "production" && {
     transport: {
       target: "pino-pretty",
       options: {
         colorize: true,
         translateTime: "yyyy-mm-dd HH:MM:ss",
+        levelFirst: true,
+        ignore: "pid,hostname",
       },
     },
   }),

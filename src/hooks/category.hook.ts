@@ -6,7 +6,7 @@ import {
 
 import { CategoryModel } from "@/models/category.model";
 import { ICategoryDocument } from "@/ts/interfaces/category.interface";
-import { NotFoundException } from "@/utils/appError";
+import { handleError } from "@/utils/error-handler.utils";
 
 export const preUpdateCategoryHook = async function (
   this: Query<ICategoryDocument, {}>,
@@ -14,7 +14,7 @@ export const preUpdateCategoryHook = async function (
 ) {
   const category = await CategoryModel.findOne(this.getQuery()).lean();
   if (!category) {
-    throw new NotFoundException("Category not found");
+    return handleError("Category not found", "NOT_FOUND");
   }
 
   const data = this.getUpdate() as ICategoryDocument &
