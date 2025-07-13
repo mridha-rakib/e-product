@@ -1,16 +1,20 @@
 import { ProductStatus } from "@/enums/product-status.enum";
 import { model, Schema } from "mongoose";
+import {
+  IProductVariantDocument,
+  IProductVariantMethods,
+  IProductVariantModel,
+} from "@/ts/interfaces/product.interface";
+import { preSaveProductVariantHook } from "@/hooks/product-variant.hook";
 
-const ProductVariantSchema = new Schema(
+const ProductVariantSchema = new Schema<
+  IProductVariantDocument,
+  IProductVariantModel,
+  IProductVariantMethods
+>(
   {
     name: {
       type: String,
-      required: true,
-      trim: true,
-    },
-    productCode: {
-      type: String,
-      unique: true,
       required: true,
       trim: true,
     },
@@ -29,23 +33,25 @@ const ProductVariantSchema = new Schema(
       min: 0,
       max: 100,
     },
-    image: {
-      type: String,
-      required: [true, "Please add an image URL"],
-      validate: {
-        validator: function (v: any) {
-          return /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/.test(v);
-        },
-        message: (props: any) => `${props.value} is not a valid URL!`,
-      },
-    },
     stock: {
       type: Number,
       required: true,
       min: 0,
       default: 0,
     },
-    status: ProductStatus,
+    status: {
+      type: String,
+      enum: ["out-of-stock", "in-stock"],
+    },
   },
   { timestamps: true, collation: { locale: "en" } }
+);
+
+ProductVariantSchema.pre("save", preSaveProductVariantHook);
+
+ProductVariantSchema.index({ name: "text" });
+
+export const ProductVariantModel = model<IProductVariantDocument>(
+  "ProductVariant",
+  ProductVariantSchema
 );

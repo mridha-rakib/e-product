@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import { logger } from "./pino-logger";
 
 type AsyncControllerType = (
   req: Request,
@@ -14,6 +15,8 @@ export function asyncHandler(
       await controller(req, res, next);
     } catch (error) {
       next(error);
+      console.log(error);
+      logger.error(error);
     }
   };
 }

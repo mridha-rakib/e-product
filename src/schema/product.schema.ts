@@ -2,32 +2,10 @@ import { z } from "zod";
 import { objectIdGeneric } from "./common.schema";
 
 export const productVariantGeneric = z.object({
-  name: z
-    .string({ message: "variant name is required" })
-    .trim()
-    .min(1)
-    .max(100),
-  productCode: z
-    .string({ message: "product code is required" })
-    .trim()
-    .min(2)
-    .max(50),
+  name: z.string().trim().min(1).max(100),
   price: z.number().nonnegative().min(0).default(0),
   originalPrice: z.number().nonnegative().min(0).optional(),
-  discount: z.number().min(0).max(100),
-  image: z
-    .instanceof(File)
-    .optional()
-    .refine((file) => {
-      if (!file) return true;
-      return file.size <= 5 * 1024 * 1024;
-    }, "File size must be less than 5MB")
-    .refine((file) => {
-      if (!file) return true;
-      return ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
-        file.type
-      );
-    }, "Only JPEG, PNG, and WebP images are allowed"),
+  discount: z.number().min(0).max(100).optional(),
   stock: z.number().nonnegative().min(0).default(0),
   status: z.enum(["out-of-stock", "in-stock"]).optional(),
 });
@@ -38,16 +16,70 @@ export const productGeneric = z.object({
     .trim()
     .min(1)
     .max(200),
+  productCode: z.string().trim().min(2).max(50).optional(),
+  image: z
+    .url()
+    .refine(
+      (url) => /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/.test(url),
+      "Invalid URL"
+    ),
   description: z
     .string({ message: "product description is required" })
     .trim()
     .min(1)
     .max(1000),
+  category: objectIdGeneric,
   variants: z.array(productVariantGeneric),
+});
+
+export const getProductsSchema = z.object({
+  query: z.object({
+    term: z.coerce.string().optional(),
+    category: z.coerce.string().optional(),
+    startPrice: z.coerce.number().positive().optional(),
+    endPrice: z.coerce.number().positive().optional(),
+  }),
+});
+
+export const getProductSchema = z.object({
+  params: z
+    .object({
+      productCode: productGeneric.shape.productCode,
+    })
+    .required(),
 });
 
 export const createProductSchema = z.object({
   body: productGeneric.extend({
     variants: productGeneric.shape.variants.default([]),
+  }),
+});
+
+export const updateProductSchema = z.object({
+  params: z.object({
+    id: objectIdGeneric,
+  }),
+  body: productGeneric.partial().extend({
+    variants: z
+      .array(
+        productVariantGeneric
+          .omit({ status: true })
+          .extend({ _id: objectIdGeneric })
+          .partial()
+      )
+      .optional(),
+  }),
+});
+
+export const deleteProductSchema = z.object({
+  params: z.object({
+    id: objectIdGeneric,
+  }),
+});
+
+export const deleteProductVariantSchema = z.object({
+  params: z.object({
+    id: objectIdGeneric,
+    idVariant: objectIdGeneric,
   }),
 });

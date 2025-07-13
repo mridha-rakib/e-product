@@ -1,4 +1,3 @@
-// utils/error-handler.utils.ts
 import { EHttpStatus } from "@/enums/http-status.enum";
 
 export class AppError extends Error {
@@ -25,7 +24,6 @@ export const handleError = (
   throw new AppError(message, status);
 };
 
-// Specific error classes for different scenarios
 export class ValidationError extends AppError {
   constructor(message: string) {
     super(message, EHttpStatus.BAD_REQUEST);

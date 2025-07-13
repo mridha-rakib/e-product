@@ -1,9 +1,7 @@
 import { model, Schema } from "mongoose";
 
-// Hooks
 import { preUpdateCategoryHook } from "@/hooks/category.hook";
 
-// TS
 import {
   ICategoryDocument,
   ICategoryMethods,

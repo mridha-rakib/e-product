@@ -8,7 +8,7 @@ import {
   updateCategorySchema,
 } from "@/schema/category.schema";
 import { CategoryService } from "@/service/category.service";
-import { zParse } from "@/utils/validatiors.utils";
+import { zParse } from "@/utils/validators.utils";
 
 const createCategory = asyncHandler(async (req: Request, res: Response) => {
   const { body: data } = await zParse(createCategorySchema, req);

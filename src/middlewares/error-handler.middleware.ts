@@ -102,7 +102,6 @@ export const errorLogger = (
     },
   });
 
-  // Don't expose sensitive information in production
   if (process.env.NODE_ENV === "production" && error.status >= 500) {
     error.message = "Internal server error";
     error.errorMessages = [

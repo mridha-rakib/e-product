@@ -32,11 +32,13 @@
   },
   "dependencies": {
     "@t3-oss/env-core": "^0.13.8",
+    "cloudinary": "^2.7.0",
     "compression": "^1.8.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dayjs": "^1.11.13",
     "express": "^5.1.0",
+    "fs": "^0.0.1-security",
     "helmet": "^8.1.0",
     "http-status": "^2.1.0",
     "mongoose": "^8.16.3",
@@ -44,6 +46,7 @@
     "mongoose-paginate-v2": "^1.9.1",
     "morgan": "^1.10.0",
     "multer": "^2.0.1",
+    "path": "^0.12.7",
     "pino": "^9.7.0",
     "pino-http": "^10.5.0",
     "pino-mongodb": "^4.3.0",
@@ -51,6 +54,7 @@
     "swagger-autogen": "^2.23.7",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
+    "url": "^0.11.4",
     "zod": "^4.0.5",
     "zod-validation-error": "^3.5.3"
   }

@@ -11,6 +11,9 @@ const env = createEnv({
       .default("development"),
     PORT: z.coerce.number().default(8000),
     BASE_PATH: z.string().default("/api/v1"),
+    CLOUDINARY_CLOUD_NAME: z.string(),
+    CLOUDINARY_API_KEY: z.string(),
+    CLOUDINARY_API_SECRET: z.string(),
     LOG_LEVEL: z
       .enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])
       .default("info"),
