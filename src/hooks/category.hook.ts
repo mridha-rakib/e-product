@@ -6,7 +6,7 @@ import {
 
 import { CategoryModel } from "@/models/category.model";
 import { ICategoryDocument } from "@/ts/interfaces/category.interface";
-import { handleError, NotFoundError } from "@/utils/error-handler.utils";
+import { NotFoundError } from "@/utils/error-handler.utils";
 
 export const preUpdateCategoryHook = async function (
   this: Query<ICategoryDocument, {}>,
