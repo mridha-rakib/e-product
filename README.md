@@ -7,8 +7,8 @@
   <ul> <li>Mongodb & Mongoose</li> </ul>
 
 ## 🔄 Getting Started
-<ol>
- <li>Set Up Environment Variables</li>
+
+
  
  ```bash
 
@@ -20,15 +20,8 @@
   CLOUDINARY_API_KEY
   CLOUDINARY_API_SECRET
 
- ```
- <li>Run the Application</li>
- ```bash
- 
-  bun install
-  bun dev
-
 ```
-</ol>
+
 
 This project was created using `bun init` in bun v1.2.4. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
 
