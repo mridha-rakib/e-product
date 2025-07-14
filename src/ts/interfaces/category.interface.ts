@@ -1,6 +1,6 @@
-import { Document, Model } from "mongoose";
+import { Document, Model } from 'mongoose';
 
-import { TDocument } from "@/ts/types/document.type";
+import { TDocument } from '@/ts/types/document.type';
 
 export interface ICategory extends TDocument {
   name: string;

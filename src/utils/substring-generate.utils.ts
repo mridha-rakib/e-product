@@ -9,10 +9,10 @@ export function findLongestIncreasingSubstrings(name: string): {
   const endIndices: number[] = [];
 
   for (let i = 0; i < lowerName.length; i++) {
-    let currentSubstring = "";
+    let currentSubstring = '';
     for (let j = i; j < lowerName.length; j++) {
       const currentChar = lowerName[j];
-      if (currentSubstring === "") {
+      if (currentSubstring === '') {
         currentSubstring = currentChar;
       } else {
         const lastChar = currentSubstring[currentSubstring.length - 1];
@@ -28,14 +28,10 @@ export function findLongestIncreasingSubstrings(name: string): {
     endIndices.push(i + currentSubstring.length - 1);
   }
 
-  const maxLength = Math.max(...substrings.map((s) => s.length));
-  const maxSubstrings = substrings.filter((s) => s.length === maxLength);
-  const maxStartIdx = startIndices.filter(
-    (_, i) => substrings[i].length === maxLength
-  );
-  const maxEndIdx = endIndices.filter(
-    (_, i) => substrings[i].length === maxLength
-  );
+  const maxLength = Math.max(...substrings.map(s => s.length));
+  const maxSubstrings = substrings.filter(s => s.length === maxLength);
+  const maxStartIdx = startIndices.filter((_, i) => substrings[i].length === maxLength);
+  const maxEndIdx = endIndices.filter((_, i) => substrings[i].length === maxLength);
 
   return {
     substrings: maxSubstrings,

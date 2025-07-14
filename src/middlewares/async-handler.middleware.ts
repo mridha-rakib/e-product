@@ -1,5 +1,5 @@
-import type { NextFunction, Request, Response } from "express";
-import { logger } from "./pino-logger";
+import type { NextFunction, Request, Response } from 'express';
+import { logger } from './pino-logger';
 
 type AsyncControllerType = (
   req: Request,
@@ -7,15 +7,12 @@ type AsyncControllerType = (
   next: NextFunction
 ) => Promise<any>;
 
-export function asyncHandler(
-  controller: AsyncControllerType
-): AsyncControllerType {
+export function asyncHandler(controller: AsyncControllerType): AsyncControllerType {
   return async (req, res, next) => {
     try {
       await controller(req, res, next);
     } catch (error) {
       next(error);
-      console.log(error);
       logger.error(error);
     }
   };

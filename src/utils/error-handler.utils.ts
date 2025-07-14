@@ -1,4 +1,4 @@
-import { EHttpStatus } from "@/enums/http-status.enum";
+import { EHttpStatus } from '@/enums/http-status.enum';
 
 export class AppError extends Error {
   public status: number;
@@ -31,25 +31,25 @@ export class ValidationError extends AppError {
 }
 
 export class NotFoundError extends AppError {
-  constructor(message: string = "Resource not found") {
+  constructor(message: string = 'Resource not found') {
     super(message, EHttpStatus.NOT_FOUND);
   }
 }
 
 export class UnauthorizedError extends AppError {
-  constructor(message: string = "Unauthorized access") {
+  constructor(message: string = 'Unauthorized access') {
     super(message, EHttpStatus.UNAUTHORIZED);
   }
 }
 
 export class ForbiddenError extends AppError {
-  constructor(message: string = "Forbidden access") {
+  constructor(message: string = 'Forbidden access') {
     super(message, EHttpStatus.FORBIDDEN);
   }
 }
 
 export class ConflictError extends AppError {
-  constructor(message: string = "Resource conflict") {
+  constructor(message: string = 'Resource conflict') {
     super(message, EHttpStatus.CONFLICT);
   }
 }

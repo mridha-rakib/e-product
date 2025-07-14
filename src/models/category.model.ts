@@ -1,18 +1,14 @@
-import { model, Schema } from "mongoose";
+import { model, Schema } from 'mongoose';
 
-import { preUpdateCategoryHook } from "@/hooks/category.hook";
+import { preUpdateCategoryHook } from '@/hooks/category.hook';
 
 import {
   ICategoryDocument,
   ICategoryMethods,
   ICategoryModel,
-} from "@/ts/interfaces/category.interface";
+} from '@/ts/interfaces/category.interface';
 
-const CategorySchema = new Schema<
-  ICategoryDocument,
-  ICategoryModel,
-  ICategoryMethods
->(
+const CategorySchema = new Schema<ICategoryDocument, ICategoryModel, ICategoryMethods>(
   {
     name: {
       type: String,
@@ -26,14 +22,11 @@ const CategorySchema = new Schema<
       trim: true,
     },
   },
-  { timestamps: true, collation: { locale: "en" } }
+  { timestamps: true, collation: { locale: 'en' } }
 );
 
-CategorySchema.pre("findOneAndUpdate", preUpdateCategoryHook);
+CategorySchema.pre('findOneAndUpdate', preUpdateCategoryHook);
 
-CategorySchema.index({ name: "text" });
+CategorySchema.index({ name: 'text' });
 
-export const CategoryModel = model<ICategoryDocument>(
-  "Category",
-  CategorySchema
-);
+export const CategoryModel = model<ICategoryDocument>('Category', CategorySchema);

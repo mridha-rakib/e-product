@@ -1,5 +1,5 @@
-import env from "@/env";
-import { v2 as cloudinary, ConfigOptions } from "cloudinary";
+import env from '@/env';
+import { v2 as cloudinary, ConfigOptions } from 'cloudinary';
 
 const cloudinaryV2 = cloudinary;
 

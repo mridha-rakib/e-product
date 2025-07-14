@@ -1,15 +1,15 @@
-import type { Request, Response } from "express";
-import statuses from "http-status";
-import { asyncHandler } from "@/middlewares/async-handler.middleware";
+import type { Request, Response } from 'express';
+import statuses from 'http-status';
+import { asyncHandler } from '@/middlewares/async-handler.middleware';
 import {
   createCategorySchema,
   deleteCategorySchema,
   getCategoriesSchema,
   getCategorySchema,
   updateCategorySchema,
-} from "@/schema/category.schema";
-import { CategoryService } from "@/service/category.service";
-import { zParse } from "@/utils/validators.utils";
+} from '@/schema/category.schema';
+import { CategoryService } from '@/service/category.service';
+import { zParse } from '@/utils/validators.utils';
 
 const createCategory = asyncHandler(async (req: Request, res: Response) => {
   const { body: data } = await zParse(createCategorySchema, req);
@@ -17,7 +17,7 @@ const createCategory = asyncHandler(async (req: Request, res: Response) => {
 
   return res.status(statuses.CREATED).json({
     success: true,
-    message: "Category created successfully",
+    message: 'Category created successfully',
     data: response,
   });
 });

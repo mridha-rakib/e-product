@@ -1,6 +1,6 @@
-import { z } from "zod";
-import { objectIdGeneric } from "./common.schema";
-import { queryEnums, queryGeneric } from "./query.schema";
+import { z } from 'zod';
+import { objectIdGeneric } from './common.schema';
+import { queryEnums, queryGeneric } from './query.schema';
 
 export const productVariantGeneric = z.object({
   name: z.string().trim().min(1).max(100),
@@ -8,25 +8,18 @@ export const productVariantGeneric = z.object({
   originalPrice: z.number().nonnegative().min(0).optional(),
   discount: z.number().min(0).max(100).optional(),
   stock: z.number().nonnegative().min(0).default(0),
-  status: z.enum(["out-of-stock", "in-stock"]).optional(),
+  status: z.enum(['out-of-stock', 'in-stock']).optional(),
 });
 
 export const productGeneric = z.object({
-  name: z
-    .string({ message: "product name is required" })
-    .trim()
-    .min(1)
-    .max(200),
+  name: z.string({ message: 'product name is required' }).trim().min(1).max(200),
   productCode: z.string().trim().min(2).max(50).optional(),
   image: z
     .url()
-    .refine(
-      (url) => /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/.test(url),
-      "Invalid URL"
-    )
+    .refine(url => /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/.test(url), 'Invalid URL')
     .optional(),
   description: z
-    .string({ message: "product description is required" })
+    .string({ message: 'product description is required' })
     .trim()
     .min(1)
     .max(1000),
@@ -46,8 +39,8 @@ export const getProductsSchema = z.object({
     .extend({
       ...queryGeneric.shape,
       sortBy: z
-        .enum(["term", "price", "stock", "status", ...queryEnums.sortBy])
-        .default("term"),
+        .enum(['term', 'price', 'stock', 'status', ...queryEnums.sortBy])
+        .default('term'),
     }),
 });
 

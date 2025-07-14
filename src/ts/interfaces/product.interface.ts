@@ -1,7 +1,7 @@
-import { Document, Model, Schema, AggregatePaginateModel } from "mongoose";
-import { TDocument } from "@/ts/types/document.type";
-import { ICategory } from "./category.interface";
-import { Url } from "url";
+import { Document, Model, Schema, AggregatePaginateModel } from 'mongoose';
+import { TDocument } from '@/ts/types/document.type';
+import { ICategory } from './category.interface';
+import { Url } from 'url';
 
 export interface IProduct extends TDocument {
   name: string;
@@ -9,7 +9,7 @@ export interface IProduct extends TDocument {
   image?: Url;
   description: string;
   category: Schema.Types.ObjectId;
-  variants?: TDocument["_id"][];
+  variants?: TDocument['_id'][];
 }
 
 export interface IProductVariant extends TDocument {
@@ -18,11 +18,10 @@ export interface IProductVariant extends TDocument {
   originalPrice?: number;
   discount?: number;
   stock: number;
-  status?: "out-of-stock" | "in-stock";
+  status?: 'out-of-stock' | 'in-stock';
 }
 
-export interface IProductPopulated
-  extends Omit<IProduct, "category" | "variants"> {
+export interface IProductPopulated extends Omit<IProduct, 'category' | 'variants'> {
   category: ICategory;
   variants: IProductVariant[];
 }
@@ -30,11 +29,8 @@ export interface IProductPopulated
 export interface IProductDocument extends IProduct, Document<string> {}
 export interface IProductModel extends Model<IProductDocument> {}
 export interface IProductMethods extends IProductDocument {}
-export interface IProductPaginateModel
-  extends AggregatePaginateModel<IProductDocument> {}
+export interface IProductPaginateModel extends AggregatePaginateModel<IProductDocument> {}
 
-export interface IProductVariantDocument
-  extends IProductVariant,
-    Document<string> {}
+export interface IProductVariantDocument extends IProductVariant, Document<string> {}
 export interface IProductVariantModel extends Model<IProductVariantDocument> {}
 export interface IProductVariantMethods extends IProductVariantDocument {}

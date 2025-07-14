@@ -1,19 +1,15 @@
-import { model, Schema } from "mongoose";
+import { model, Schema } from 'mongoose';
 
-import { aggregatePaginatePlugin } from "@/config/paginate.config";
+import { aggregatePaginatePlugin } from '@/config/paginate.config';
 import {
   IProductDocument,
   IProductMethods,
   IProductModel,
   IProductPaginateModel,
-} from "@/ts/interfaces/product.interface";
-import { preSaveProductHook, preUpdateProductHook } from "@/hooks/product.hook";
+} from '@/ts/interfaces/product.interface';
+import { preSaveProductHook, preUpdateProductHook } from '@/hooks/product.hook';
 
-const ProductSchema = new Schema<
-  IProductDocument,
-  IProductModel,
-  IProductMethods
->(
+const ProductSchema = new Schema<IProductDocument, IProductModel, IProductMethods>(
   {
     name: {
       type: String,
@@ -41,21 +37,21 @@ const ProductSchema = new Schema<
     },
     category: {
       type: Schema.Types.ObjectId,
-      ref: "Category",
+      ref: 'Category',
       required: true,
     },
-    variants: [{ type: Schema.Types.ObjectId, ref: "ProductVariant" }],
+    variants: [{ type: Schema.Types.ObjectId, ref: 'ProductVariant' }],
   },
-  { timestamps: true, collation: { locale: "en" } }
+  { timestamps: true, collation: { locale: 'en' } }
 );
 
 ProductSchema.plugin(aggregatePaginatePlugin);
-ProductSchema.pre("save", preSaveProductHook);
-ProductSchema.pre("findOneAndUpdate", preUpdateProductHook);
+ProductSchema.pre('save', preSaveProductHook);
+ProductSchema.pre('findOneAndUpdate', preUpdateProductHook);
 
-ProductSchema.index({ name: "text", description: "text" });
+ProductSchema.index({ name: 'text', description: 'text' });
 
 export const ProductModel = model<IProductDocument, IProductPaginateModel>(
-  "Product",
+  'Product',
   ProductSchema
 );

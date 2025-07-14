@@ -1,6 +1,6 @@
-import { z } from "zod";
-import { objectIdGeneric } from "./common.schema";
-import { queryGeneric } from "./query.schema";
+import { z } from 'zod';
+import { objectIdGeneric } from './common.schema';
+import { queryGeneric } from './query.schema';
 
 export const categoryGeneric = z.object({
   name: z.string(),
@@ -11,7 +11,7 @@ export const getCategoriesSchema = z.object({
   query: z
     .object({
       name: z.coerce.string().optional(),
-      sortBy: z.enum(["name"]).default("name"),
+      sortBy: z.enum(['name']).default('name'),
     })
     .extend({
       orderBy: queryGeneric.shape.orderBy,

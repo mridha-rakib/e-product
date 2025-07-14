@@ -6,7 +6,6 @@
     "moduleDetection": "force",
     "module": "ESNext",
     "moduleResolution": "bundler",
-
     "outDir": "./dist",
     "rootDir": "./src",
     "baseUrl": "./src",

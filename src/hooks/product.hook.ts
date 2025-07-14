@@ -1,16 +1,16 @@
-import { CategoryModel } from "@/models/category.model";
-import { ProductModel } from "@/models/product.model";
+import { CategoryModel } from '@/models/category.model';
+import { ProductModel } from '@/models/product.model';
 import {
   CallbackWithoutResultAndOptionalError,
   Query,
   Types,
   UpdateQuery,
-} from "mongoose";
+} from 'mongoose';
 
-import { generateProductCode } from "@/utils/product.utils";
+import { generateProductCode } from '@/utils/product.utils';
 
-import { IProductDocument } from "@/ts/interfaces/product.interface";
-import { ConflictError, NotFoundError } from "@/utils/error-handler.utils";
+import { IProductDocument } from '@/ts/interfaces/product.interface';
+import { ConflictError, NotFoundError } from '@/utils/error-handler.utils';
 
 export const preSaveProductHook = async function (
   this: IProductDocument,
@@ -25,9 +25,9 @@ export const preSaveProductHook = async function (
     CategoryModel.exists({ _id: product.category }),
   ]);
 
-  if (productExists) throw new ConflictError("Product already exists");
+  if (productExists) throw new ConflictError('Product already exists');
 
-  if (!categoryExists) throw new NotFoundError("Category not found");
+  if (!categoryExists) throw new NotFoundError('Category not found');
 
   return next();
 };
@@ -37,14 +37,13 @@ export const preUpdateProductHook = async function (
   next: CallbackWithoutResultAndOptionalError
 ) {
   const product = await ProductModel.findOne(this.getQuery()).lean();
-  if (!product) throw new NotFoundError("Product not found");
+  if (!product) throw new NotFoundError('Product not found');
 
-  const data = this.getUpdate() as IProductDocument &
-    UpdateQuery<IProductDocument>;
+  const data = this.getUpdate() as IProductDocument & UpdateQuery<IProductDocument>;
 
   if (data.category) {
     const categoryExists = await CategoryModel.exists({ _id: data.category });
-    if (!categoryExists) throw new NotFoundError("Category not found.");
+    if (!categoryExists) throw new NotFoundError('Category not found.');
   }
 
   return next();

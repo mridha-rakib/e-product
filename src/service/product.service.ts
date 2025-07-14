@@ -1,40 +1,34 @@
-import fs from "fs/promises";
+import fs from 'fs/promises';
 import {
   IProduct,
   IProductPopulated,
   IProductVariant,
-} from "@/ts/interfaces/product.interface";
-import {
-  TProductCreate,
-  TProductQuery,
-  TProductUpdate,
-} from "@/ts/types/product.type";
-import { CloudinaryService } from "./cloudinary.service";
-import { logger } from "@/middlewares/pino-logger";
-import { IRequest, IUploadResult } from "@/ts/types/file-upload.type";
-import { NotFoundError } from "@/utils/error-handler.utils";
-import { ProductVariantModel } from "@/models/product-variant.model";
-import { ProductModel } from "@/models/product.model";
-import { PipelineStage, Types } from "mongoose";
-import { paginateConfig } from "@/config/paginate.config";
+} from '@/ts/interfaces/product.interface';
+import { TProductCreate, TProductQuery, TProductUpdate } from '@/ts/types/product.type';
+import { CloudinaryService } from './cloudinary.service';
+import { logger } from '@/middlewares/pino-logger';
+import { IRequest, IUploadResult } from '@/ts/types/file-upload.type';
+import { NotFoundError } from '@/utils/error-handler.utils';
+import { ProductVariantModel } from '@/models/product-variant.model';
+import { ProductModel } from '@/models/product.model';
+import { PipelineStage, Types } from 'mongoose';
+import { paginateConfig } from '@/config/paginate.config';
 
 export const ProductService = {
   async createProduct(product: TProductCreate) {
-    let variants: IProduct["variants"] = [];
+    let variants: IProduct['variants'] = [];
 
     if (product?.variants?.length) {
-      const createdVariants = await ProductVariantModel.create(
-        product.variants
-      );
+      const createdVariants = await ProductVariantModel.create(product.variants);
 
-      variants = createdVariants.map((variant) => variant._id);
+      variants = createdVariants.map(variant => variant._id);
     }
 
     const createdProduct = await ProductModel.create({ ...product, variants })
-      .then((doc) => doc.populate("variants"))
-      .then((doc) =>
+      .then(doc => doc.populate('variants'))
+      .then(doc =>
         doc.populate({
-          path: "category",
+          path: 'category',
         })
       );
 
@@ -53,15 +47,15 @@ export const ProductService = {
       category: [
         {
           $lookup: {
-            from: "categories",
-            localField: "category",
-            foreignField: "_id",
-            as: "category",
+            from: 'categories',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'category',
           },
         },
         {
           $unwind: {
-            path: "$category",
+            path: '$category',
             preserveNullAndEmptyArrays: true,
           },
         },
@@ -69,10 +63,10 @@ export const ProductService = {
       variants: [
         {
           $lookup: {
-            from: "productvariants",
-            localField: "variants",
-            foreignField: "_id",
-            as: "variants",
+            from: 'productvariants',
+            localField: 'variants',
+            foreignField: '_id',
+            as: 'variants',
           },
         },
       ],
@@ -80,19 +74,18 @@ export const ProductService = {
 
     const sortByDictionary = {
       term: { name: query.orderBy },
-      price: { "variants.price": query.orderBy },
-      stock: { "variants.stock": query.orderBy },
-      status: { "variants.status": query.orderBy },
+      price: { 'variants.price': query.orderBy },
+      stock: { 'variants.stock': query.orderBy },
+      status: { 'variants.status': query.orderBy },
       createdAt: { createdAt: query.orderBy },
       updatedAt: { updatedAt: query.orderBy },
     } as const;
 
-    if (query.term)
-      conditions.unshift({ $match: { $text: { $search: query.term } } });
+    if (query.term) conditions.unshift({ $match: { $text: { $search: query.term } } });
 
     if (query.category)
       conditions.push(...populateDictionary.category, {
-        $match: { "category.name": query.category },
+        $match: { 'category.name': query.category },
       });
 
     if (query.startPrice || query.endPrice || query.hasEmptyStock)
@@ -101,7 +94,7 @@ export const ProductService = {
     if (query.startPrice || query.endPrice)
       conditions.push({
         $match: {
-          "variants.price": {
+          'variants.price': {
             ...(query.startPrice && { $gte: query.startPrice }),
             ...(query.endPrice && { $lte: query.endPrice }),
           },
@@ -111,18 +104,16 @@ export const ProductService = {
     if (query.hasEmptyStock)
       conditions.push({
         $match: {
-          "variants.stock": { $lte: 0 },
+          'variants.stock': { $lte: 0 },
         },
       });
 
     const keysToPopulate = Object.keys(populateDictionary).filter(
-      (key) => !activeQuery[key]
+      key => !activeQuery[key]
     );
 
     const populateDictionaryFiltered = Object.fromEntries(
-      Object.entries(populateDictionary).filter(([key]) =>
-        keysToPopulate.includes(key)
-      )
+      Object.entries(populateDictionary).filter(([key]) => keysToPopulate.includes(key))
     );
 
     const populateStages = Object.values(populateDictionaryFiltered).flat();
@@ -139,31 +130,29 @@ export const ProductService = {
     });
   },
 
-  async getProduct(productCode: IProduct["productCode"]) {
+  async getProduct(productCode: IProduct['productCode']) {
     return await ProductModel.findOne({ productCode })
-      .populate("variants category")
+      .populate('variants category')
       .lean<IProductPopulated>();
   },
 
-  async updateProduct(id: IProduct["_id"], product: TProductUpdate) {
-    let variants: IProduct["variants"] = [];
+  async updateProduct(id: IProduct['_id'], product: TProductUpdate) {
+    let variants: IProduct['variants'] = [];
 
     if (product?.variants?.length) {
-      const variantPromises = product.variants.map(
-        async ({ _id, ...variant }) => {
-          if (_id) {
-            // Existing variant update
-            return await ProductVariantModel.findByIdAndUpdate(
-              _id,
-              { $set: variant },
-              { new: true, upsert: false }
-            );
-          } else {
-            // New variant create
-            return await ProductVariantModel.create(variant);
-          }
+      const variantPromises = product.variants.map(async ({ _id, ...variant }) => {
+        if (_id) {
+          // Existing variant update
+          return await ProductVariantModel.findByIdAndUpdate(
+            _id,
+            { $set: variant },
+            { new: true, upsert: false }
+          );
+        } else {
+          // New variant create
+          return await ProductVariantModel.create(variant);
         }
-      );
+      });
 
       // const upsertedVariants = await ProductVariantModel.bulkWrite(
       //   product.variants.map(({ _id, ...variant }) => ({
@@ -176,9 +165,7 @@ export const ProductService = {
       // );
 
       const updatedVariants = await Promise.all(variantPromises);
-      variants = updatedVariants
-        .filter((v) => v !== null)
-        .map((v) => v!._id.toString());
+      variants = updatedVariants.filter(v => v !== null).map(v => v!._id.toString());
 
       // const upsertedVariantsIds: Types.ObjectId[] = Object.values(
       //   upsertedVariants.upsertedIds
@@ -204,18 +191,15 @@ export const ProductService = {
       { ...data, ...(variants.length && { variants }) },
       { new: true }
     )
-      .populate("category variants")
+      .populate('category variants')
       .lean<IProductPopulated>();
   },
 
-  async deleteProduct(id: IProduct["_id"]) {
+  async deleteProduct(id: IProduct['_id']) {
     return await ProductModel.findByIdAndDelete(id).lean<IProduct>();
   },
 
-  async deleteProductVariant(
-    id: IProduct["_id"],
-    variantId: IProductVariant["_id"]
-  ) {
+  async deleteProductVariant(id: IProduct['_id'], variantId: IProductVariant['_id']) {
     return await Promise.all([
       ProductModel.findByIdAndUpdate(
         id,
@@ -241,12 +225,10 @@ export const ProductService = {
       }
 
       if (uploadResult?.public_id) {
-        await CloudinaryService.deleteImage(uploadResult.public_id).catch(
-          console.error
-        );
+        await CloudinaryService.deleteImage(uploadResult.public_id).catch(console.error);
       }
       logger.error(`Update product controller error: ${error.message}`);
-      throw new NotFoundError("Image upload failed");
+      throw new NotFoundError('Image upload failed');
     }
   },
 
@@ -256,8 +238,8 @@ export const ProductService = {
     try {
       await fs.unlink(filePath);
     } catch (error: any) {
-      if (error.code !== "ENOENT") {
-        console.error("File cleanup error:", error.message);
+      if (error.code !== 'ENOENT') {
+        console.error('File cleanup error:', error.message);
       }
       throw error;
     }

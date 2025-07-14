@@ -1,6 +1,6 @@
-import fs, { unlink } from "fs/promises";
-import util, { promisify } from "util";
-import { cloudinary } from "@/config/cloudinary.config";
+import fs, { unlink } from 'fs/promises';
+import util, { promisify } from 'util';
+import { cloudinary } from '@/config/cloudinary.config';
 
 const unlinkFile = promisify(unlink);
 
@@ -10,10 +10,10 @@ export const CloudinaryService = {
       await fs.access(filePath);
 
       const result = await cloudinary.uploader.upload(filePath, {
-        folder: "products",
+        folder: 'products',
         use_filename: true,
         unique_filename: false,
-        resource_type: "auto",
+        resource_type: 'auto',
       });
 
       await fs.unlink(filePath);
@@ -31,7 +31,7 @@ export const CloudinaryService = {
     try {
       await cloudinary.uploader.destroy(publicId);
     } catch (error: any) {
-      console.error("Cloudinary delete error:", error.message);
+      console.error('Cloudinary delete error:', error.message);
       throw new Error(`Cloudinary delete failed: ${error.message}`);
     }
   },

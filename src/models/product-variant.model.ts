@@ -1,14 +1,14 @@
-import { ProductStatus } from "@/enums/product-status.enum";
-import { model, Schema } from "mongoose";
+import { ProductStatus } from '@/enums/product-status.enum';
+import { model, Schema } from 'mongoose';
 import {
   IProductVariantDocument,
   IProductVariantMethods,
   IProductVariantModel,
-} from "@/ts/interfaces/product.interface";
+} from '@/ts/interfaces/product.interface';
 import {
   preSaveProductVariantHook,
   preUpdateProductVariantHook,
-} from "@/hooks/product-variant.hook";
+} from '@/hooks/product-variant.hook';
 
 const ProductVariantSchema = new Schema<
   IProductVariantDocument,
@@ -44,21 +44,20 @@ const ProductVariantSchema = new Schema<
     },
     status: {
       type: String,
-      enum: ["out-of-stock", "in-stock"],
+      enum: ['out-of-stock', 'in-stock'],
     },
   },
-  { timestamps: true, collation: { locale: "en" } }
+  { timestamps: true, collation: { locale: 'en' } }
 );
 
-ProductVariantSchema.pre("save", preSaveProductVariantHook);
-ProductVariantSchema.pre("findOneAndUpdate", preUpdateProductVariantHook);
-ProductVariantSchema.pre("updateOne", preUpdateProductVariantHook);
-ProductVariantSchema.pre("updateMany", preUpdateProductVariantHook);
+ProductVariantSchema.pre('save', preSaveProductVariantHook);
+ProductVariantSchema.pre('findOneAndUpdate', preUpdateProductVariantHook);
+ProductVariantSchema.pre('updateOne', preUpdateProductVariantHook);
+ProductVariantSchema.pre('updateMany', preUpdateProductVariantHook);
 
-
-ProductVariantSchema.index({ name: "text" });
+ProductVariantSchema.index({ name: 'text' });
 
 export const ProductVariantModel = model<IProductVariantDocument>(
-  "ProductVariant",
+  'ProductVariant',
   ProductVariantSchema
 );

@@ -1,4 +1,4 @@
-import statuses from "http-status";
+import statuses from 'http-status';
 
 import {
   createProductSchema,
@@ -7,15 +7,13 @@ import {
   getProductSchema,
   getProductsSchema,
   updateProductSchema,
-} from "@/schema/product.schema";
+} from '@/schema/product.schema';
 
-import { zParse } from "@/utils/validators.utils";
-import { asyncHandler } from "@/middlewares/async-handler.middleware";
-import { Request, Response } from "express";
-import { NotFoundError } from "@/utils/error-handler.utils";
-import { ProductService } from "@/service/product.service";
-import { IUploadResult } from "@/ts/types/file-upload.type";
-import { logger } from "@/middlewares/pino-logger";
+import { zParse } from '@/utils/validators.utils';
+import { asyncHandler } from '@/middlewares/async-handler.middleware';
+import { Request, Response } from 'express';
+import { ProductService } from '@/service/product.service';
+import { IUploadResult } from '@/ts/types/file-upload.type';
 
 const createProduct = asyncHandler(async (req: Request, res: Response) => {
   // let uploadResult: IUploadResult | undefined;
@@ -55,9 +53,7 @@ const getProduct = asyncHandler(async (req: Request, res: Response) => {
 
 const updateProduct = asyncHandler(async (req: Request, res: Response) => {
   if (req.file) {
-    let uploadResult: IUploadResult | undefined;
-    uploadResult = await ProductService.createImageFileLink(req);
-    logger.debug("Upload result check: ", uploadResult);
+    const uploadResult: IUploadResult = await ProductService.createImageFileLink(req);
     req.body.image = uploadResult!.url;
   }
 
@@ -78,20 +74,18 @@ const deleteProduct = asyncHandler(async (req: Request, res: Response) => {
   await ProductService.deleteProduct(id);
 
   return res.status(statuses.NO_CONTENT).send({
-    message: "Product deleted successfully.",
+    message: 'Product deleted successfully.',
   });
 });
 
-const deleteProductVariant = asyncHandler(
-  async (req: Request, res: Response) => {
-    const {
-      params: { id, idVariant },
-    } = await zParse(deleteProductVariantSchema, req);
+const deleteProductVariant = asyncHandler(async (req: Request, res: Response) => {
+  const {
+    params: { id, idVariant },
+  } = await zParse(deleteProductVariantSchema, req);
 
-    await ProductService.deleteProductVariant(id, idVariant);
-    return res.sendStatus(statuses.NO_CONTENT);
-  }
-);
+  await ProductService.deleteProductVariant(id, idVariant);
+  return res.sendStatus(statuses.NO_CONTENT);
+});
 
 export const ProductController = {
   createProduct,

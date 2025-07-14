@@ -1,5 +1,5 @@
-import { Request } from "express";
-import { z, ZodError } from "zod";
+import { Request } from 'express';
+import { z, ZodError } from 'zod';
 
 export const zParse = async <T extends z.ZodTypeAny>(
   schema: T,
@@ -13,10 +13,9 @@ export const zParse = async <T extends z.ZodTypeAny>(
     });
     return result;
   } catch (error) {
-   
     if (error instanceof ZodError) {
       throw error;
     }
-    throw new Error("Validation failed");
+    throw new Error('Validation failed');
   }
 };

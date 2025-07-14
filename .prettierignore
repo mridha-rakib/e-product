@@ -1,0 +1,14 @@
+.DS_Store
+node_modules
+/build
+/package
+/static/files
+.env
+.env.*
+README.md
+
+# Ignore files for PNPM, NPM and YARN
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+bun.lock
