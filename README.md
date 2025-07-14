@@ -16,7 +16,7 @@ This project was created using `bun init` in bun v1.2.4. [Bun](https://bun.sh) i
 
 ## Entity Relationship Diagram for e-Product
 ### Database Tables and Relationships
-Category ↔ Product (One-to-Many)
+Category ↔ Product (One-to-Many) </br>
 Product ↔ ProductVariant (One-to-Many)
 
 <img width="784" height="508" alt="image" src="https://github.com/user-attachments/assets/cac89a32-2f37-4242-b856-110fd9bf797d" />
