@@ -8,7 +8,7 @@ import { TProductCreate, TProductQuery, TProductUpdate } from '@/ts/types/produc
 import { CloudinaryService } from './cloudinary.service';
 import { logger } from '@/middlewares/pino-logger';
 import { IRequest, IUploadResult } from '@/ts/types/file-upload.type';
-import { NotFoundError } from '@/utils/error-handler.utils';
+import { InternalServerException } from '@/utils/error-handler.utils';
 import { ProductVariantModel } from '@/models/product-variant.model';
 import { ProductModel } from '@/models/product.model';
 import { PipelineStage } from 'mongoose';
@@ -200,7 +200,7 @@ export const ProductService = {
         await CloudinaryService.deleteImage(uploadResult.public_id).catch(logger.error);
       }
       logger.error(`Update product controller error: ${error.message}`);
-      throw new NotFoundError('Image upload failed');
+      throw new InternalServerException('Image upload failed');
     }
   },
 
