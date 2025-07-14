@@ -4,7 +4,7 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
 import { pinoLogger } from '@/middlewares/pino-logger';
 import env from './env';
-import { errorLogger } from './middlewares/error-handler.middleware';
+import { errorHandler } from './middlewares/error-handler.middleware';
 import rootRoutes from './routes/index.route';
 
 const app: Application = express();
@@ -31,6 +31,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-app.use(errorLogger);
+app.use(errorHandler);
 
 export default app;
