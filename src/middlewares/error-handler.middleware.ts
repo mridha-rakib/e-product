@@ -1,115 +1,43 @@
-import { Request, Response } from 'express';
-import { ZodError } from 'zod';
-import { MongoServerError } from 'mongodb';
-import { Error as MongooseError } from 'mongoose';
-import { EHttpStatus } from '@/enums/http-status.enum';
-import process from 'process';
+import { ErrorRequestHandler, Response } from 'express';
+import z, { ZodError } from 'zod';
+import { logger } from './pino-logger';
+import status from 'http-status';
+import { ErrorCodeEnum } from '@/enums/error-code.enum';
+import { AppError } from '@/utils/error-handler.utils';
 
-interface CustomError extends Error {
-  status?: number;
-  statusCode?: number;
-  code?: number;
-  keyValue?: Record<string, any>;
-  errors?: Record<string, any>;
-}
-
-export const errorLogger = (err: CustomError, req: Request, res: Response) => {
-  const error = {
-    name: err.name,
+const formatZodError = (res: Response, error: z.ZodError) => {
+  const errors = error?.issues?.map((err: any) => ({
+    field: err.path.join('.'),
     message: err.message,
-    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
-    status: EHttpStatus.INTERNAL_SERVER_ERROR,
-    success: false,
-    errorMessages: [] as Array<{ path: string; message: string }>,
-  };
-
-  if (err instanceof ZodError) {
-    error.status = EHttpStatus.BAD_REQUEST;
-    error.name = 'ValidationError';
-    error.message = 'Validation failed';
-    error.errorMessages = err.issues.map(issue => ({
-      path: issue.path.join('.') || 'unknown',
-      message: issue.message,
-    }));
-  } else if (err.code === 11000) {
-    error.status = EHttpStatus.CONFLICT;
-    error.name = 'DuplicateError';
-    const field = Object.keys(err.keyValue || {})[0];
-    error.message = `${field} already exists`;
-    error.errorMessages = [
-      {
-        path: field || 'unknown',
-        message: `${field} must be unique`,
-      },
-    ];
-  } else if (err instanceof MongoServerError) {
-    error.status = EHttpStatus.BAD_REQUEST;
-    error.message = "Query don't match";
-    error.errorMessages = [
-      {
-        path: '/api/v1/category',
-        message: err.message,
-      },
-    ];
-  } else if (err instanceof MongooseError.ValidationError) {
-    error.status = EHttpStatus.BAD_REQUEST;
-    error.name = 'ValidationError';
-    error.message = 'Validation failed';
-    error.errorMessages = Object.values(err.errors).map((val: any) => ({
-      path: val.path,
-      message: val.message,
-    }));
-  } else if (err instanceof MongooseError.CastError) {
-    error.status = EHttpStatus.BAD_REQUEST;
-    error.name = 'CastError';
-    error.message = `Invalid ${err.path}: ${err.value}`;
-    error.errorMessages = [
-      {
-        path: err.path,
-        message: `Invalid ${err.path}`,
-      },
-    ];
-  } else if (err.status || err.statusCode) {
-    error.status = err.status || err.statusCode || EHttpStatus.INTERNAL_SERVER_ERROR;
-    error.errorMessages = [
-      {
-        path: req.originalUrl,
-        message: err.message,
-      },
-    ];
-  } else {
-    error.errorMessages = [
-      {
-        path: req.originalUrl,
-        message: err.message || 'Internal server error',
-      },
-    ];
-  }
-
-  req.log.error({
-    error: {
-      name: error.name,
-      message: error.message,
-      stack: err.stack,
-      url: req.originalUrl,
-      method: req.method,
-    },
+  }));
+  return res.status(status.BAD_REQUEST).json({
+    message: 'Validation failed',
+    errors: errors,
+    errorCode: ErrorCodeEnum.VALIDATION_ERROR,
   });
+};
 
-  if (process.env.NODE_ENV === 'production' && error.status >= 500) {
-    error.message = 'Internal server error';
-    error.errorMessages = [
-      {
-        path: req.originalUrl,
-        message: 'Something went wrong',
-      },
-    ];
+export const errorHandler: ErrorRequestHandler = (error, req, res, next): any => {
+  logger.error(`Error Occurred on PATH: ${req.path} `, error);
+
+  if (error instanceof SyntaxError) {
+    return res.status(status.BAD_REQUEST).json({
+      message: 'Invalid JSON format. Please check your request body.',
+    });
+  }
+  if (error instanceof ZodError) {
+    return formatZodError(res, error);
   }
 
-  return res.status(error.status).json({
-    success: error.success,
-    message: error.message,
-    errorMessages: error.errorMessages,
-    ...(process.env.NODE_ENV === 'development' && { stack: error.stack }),
+  if (error instanceof AppError) {
+    return res.status(error.statusCode).json({
+      message: error.message,
+      errorCode: error.errorCode,
+    });
+  }
+
+  return res.status(status.INTERNAL_SERVER_ERROR).json({
+    message: 'Internal Server Error',
+    error: error?.message || 'Unknown error occurred',
   });
 };
