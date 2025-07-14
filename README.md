@@ -1,5 +1,11 @@
-# interview-project
-
+# 🌟 Advanced e-product shop
+ 
+## 🚀 Tools & Technologies
+ <ul> <li>Node.js</li> </ul>
+  <ul> <li>Express.js</li> </ul>
+  <ul> <li>TypeScript</li> </ul>
+  <ul> <li>Mongodb & Mongoose</li> </ul>
+  
 To install dependencies:
 
 ```bash
