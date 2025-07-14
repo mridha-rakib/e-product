@@ -142,47 +142,19 @@ export const ProductService = {
     if (product?.variants?.length) {
       const variantPromises = product.variants.map(async ({ _id, ...variant }) => {
         if (_id) {
-          // Existing variant update
           return await ProductVariantModel.findByIdAndUpdate(
             _id,
             { $set: variant },
             { new: true, upsert: false }
           );
         } else {
-          // New variant create
           return await ProductVariantModel.create(variant);
         }
       });
 
-      // const upsertedVariants = await ProductVariantModel.bulkWrite(
-      //   product.variants.map(({ _id, ...variant }) => ({
-      //     updateOne: {
-      //       filter: _id ? { _id } : {},
-      //       update: { $set: variant },
-      //       upsert: true,
-      //     },
-      //   }))
-      // );
-
       const updatedVariants = await Promise.all(variantPromises);
       variants = updatedVariants.filter(v => v !== null).map(v => v!._id.toString());
-
-      // const upsertedVariantsIds: Types.ObjectId[] = Object.values(
-      //   upsertedVariants.upsertedIds
-      // );
-
-      // const existingVariantIds = product.variants
-      //   .filter((v) => v._id)
-      //   .map((v) => v._id!);
-
-      // variants = [
-      //   ...existingVariantIds,
-      //   ...upsertedVariantsIds.map((id) => id.toString()),
-      // ];
     }
-
-    // const data = { ...product, ...(variants.length && { variants }) };
-    // delete data.variants;
 
     const data = { ...product };
     delete data.variants;

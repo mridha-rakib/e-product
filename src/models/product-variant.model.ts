@@ -1,4 +1,3 @@
-import { ProductStatus } from '@/enums/product-status.enum';
 import { model, Schema } from 'mongoose';
 import {
   IProductVariantDocument,

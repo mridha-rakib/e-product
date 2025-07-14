@@ -1,11 +1,6 @@
 import { CategoryModel } from '@/models/category.model';
 import { ProductModel } from '@/models/product.model';
-import {
-  CallbackWithoutResultAndOptionalError,
-  Query,
-  Types,
-  UpdateQuery,
-} from 'mongoose';
+import { CallbackWithoutResultAndOptionalError, Query, UpdateQuery } from 'mongoose';
 
 import { generateProductCode } from '@/utils/product.utils';
 
@@ -16,6 +11,7 @@ export const preSaveProductHook = async function (
   this: IProductDocument,
   next: CallbackWithoutResultAndOptionalError
 ) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const product = this;
 
   product.productCode = generateProductCode(product.name);
@@ -33,7 +29,7 @@ export const preSaveProductHook = async function (
 };
 
 export const preUpdateProductHook = async function (
-  this: Query<IProductDocument, {}>,
+  this: Query<IProductDocument, object>,
   next: CallbackWithoutResultAndOptionalError
 ) {
   const product = await ProductModel.findOne(this.getQuery()).lean();

@@ -1,9 +1,9 @@
-// middlewares/error-handler.middleware.ts
 import { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
-import { MongoError, MongoServerError } from 'mongodb';
+import { MongoServerError } from 'mongodb';
 import { Error as MongooseError } from 'mongoose';
 import { EHttpStatus } from '@/enums/http-status.enum';
+import process from 'process';
 
 interface CustomError extends Error {
   status?: number;
@@ -13,12 +13,7 @@ interface CustomError extends Error {
   errors?: Record<string, any>;
 }
 
-export const errorLogger = (
-  err: CustomError,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const errorLogger = (err: CustomError, req: Request, res: Response) => {
   const error = {
     name: err.name,
     message: err.message,

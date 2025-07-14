@@ -16,4 +16,3 @@ export const queryGeneric = z.object({
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
 });
-0;

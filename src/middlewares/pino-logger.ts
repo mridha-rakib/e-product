@@ -1,5 +1,4 @@
 import env from '@/env';
-import dayjs from 'dayjs';
 import { randomUUID } from 'node:crypto';
 import pino from 'pino';
 import pinoHttp from 'pino-http';

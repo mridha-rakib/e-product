@@ -9,6 +9,7 @@ import {
   TCategoryUpdate,
 } from '@/ts/types/category.type';
 import { ConflictError } from '@/utils/error-handler.utils';
+import { logger } from '@/middlewares/pino-logger';
 
 export const CategoryService = {
   async getCategories(query: TCategoryQuery) {
@@ -32,7 +33,7 @@ export const CategoryService = {
       });
       return createdCategory.toObject<ICategory>();
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       if (error.code === 11000) {
         throw new ConflictError('Category with this name already exists');
       }

@@ -1,8 +1,5 @@
-import fs, { unlink } from 'fs/promises';
-import util, { promisify } from 'util';
+import fs from 'fs/promises';
 import { cloudinary } from '@/config/cloudinary.config';
-
-const unlinkFile = promisify(unlink);
 
 export const CloudinaryService = {
   async uploadImage(filePath: string) {
