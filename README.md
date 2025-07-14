@@ -25,9 +25,10 @@ CLOUDINARY_API_SECRET=your_cloudinary_secret
 ```
 2. Run the Application
 Install dependencies and start the server:
+```
 bun install  # Install dependencies
 bun dev     # Start the development server
-
+```
 This project was created using `bun init` in bun v1.2.4. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
 
 ## Entity Relationship Diagram for e-Product
