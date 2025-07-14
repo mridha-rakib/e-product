@@ -5,18 +5,25 @@
   <ul> <li>Express.js</li> </ul>
   <ul> <li>TypeScript</li> </ul>
   <ul> <li>Mongodb & Mongoose</li> </ul>
-  
-To install dependencies:
 
-```bash
+## 🔄 Getting Started
+<ol>
+ <li>Set Up Environment Variables</li>
+ ```bash
+ MONGO_URI:
+ NODE_ENV:
+ PORT: 
+ BASE_PATH:
+CLOUDINARY_CLOUD_NAME
+CLOUDINARY_API_KEY
+CLOUDINARY_API_SECRET
+ ```
+ <li>Run the Application</li>
+ ```bash
 bun install
+bun dev
 ```
-
-To run:
-
-```bash
-bun run index.ts
-```
+</ol>
 
 This project was created using `bun init` in bun v1.2.4. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
 
