@@ -23,8 +23,10 @@
  ```
  <li>Run the Application</li>
  ```bash
-bun install
-bun dev
+ 
+  bun install
+  bun dev
+
 ```
 </ol>
 
