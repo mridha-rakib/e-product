@@ -1,4 +1,4 @@
-import { FilterQuery, Types } from 'mongoose';
+import { FilterQuery } from 'mongoose';
 import { CategoryModel } from '@/models/category.model';
 
 import { ICategory, ICategoryDocument } from '@/ts/interfaces/category.interface';

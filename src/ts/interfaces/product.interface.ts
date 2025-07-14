@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { Document, Model, Schema, AggregatePaginateModel } from 'mongoose';
 import { TDocument } from '@/ts/types/document.type';
 import { ICategory } from './category.interface';

@@ -11,7 +11,7 @@ import { IRequest, IUploadResult } from '@/ts/types/file-upload.type';
 import { NotFoundError } from '@/utils/error-handler.utils';
 import { ProductVariantModel } from '@/models/product-variant.model';
 import { ProductModel } from '@/models/product.model';
-import { PipelineStage, Types } from 'mongoose';
+import { PipelineStage } from 'mongoose';
 import { paginateConfig } from '@/config/paginate.config';
 
 export const ProductService = {
@@ -197,7 +197,7 @@ export const ProductService = {
       }
 
       if (uploadResult?.public_id) {
-        await CloudinaryService.deleteImage(uploadResult.public_id).catch(console.error);
+        await CloudinaryService.deleteImage(uploadResult.public_id).catch(logger.error);
       }
       logger.error(`Update product controller error: ${error.message}`);
       throw new NotFoundError('Image upload failed');
@@ -211,7 +211,7 @@ export const ProductService = {
       await fs.unlink(filePath);
     } catch (error: any) {
       if (error.code !== 'ENOENT') {
-        console.error('File cleanup error:', error.message);
+        logger.error('File cleanup error:', error.message);
       }
       throw error;
     }

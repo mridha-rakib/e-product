@@ -63,12 +63,14 @@ export const updateProductSchema = z.object({
     id: objectIdGeneric,
   }),
   body: productGeneric.partial().extend({
-    variants: z.array(
-      productVariantGeneric
-        .omit({ status: true })
-        .extend({ _id: objectIdGeneric })
-        .partial()
-    ),
+    variants: z
+      .array(
+        productVariantGeneric
+          .omit({ status: true })
+          .extend({ _id: objectIdGeneric })
+          .partial()
+      )
+      .optional(),
   }),
 });
 

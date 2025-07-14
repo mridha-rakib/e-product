@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
 import { cloudinary } from '@/config/cloudinary.config';
+import { logger } from '@/middlewares/pino-logger';
 
 export const CloudinaryService = {
   async uploadImage(filePath: string) {
@@ -28,7 +29,7 @@ export const CloudinaryService = {
     try {
       await cloudinary.uploader.destroy(publicId);
     } catch (error: any) {
-      console.error('Cloudinary delete error:', error.message);
+      logger.error('Cloudinary delete error:', error.message);
       throw new Error(`Cloudinary delete failed: ${error.message}`);
     }
   },

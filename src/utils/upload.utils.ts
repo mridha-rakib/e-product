@@ -1,8 +1,10 @@
+/* eslint-disable no-undef */
 import multer, { FileFilterCallback } from 'multer';
 import { fileURLToPath } from 'url';
-import path, { dirname, resolve } from 'path';
+import path, { dirname } from 'path';
 import fs, { existsSync, mkdirSync } from 'fs';
 import { Request } from 'express';
+import { logger } from '@/middlewares/pino-logger';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -11,7 +13,7 @@ const uploadDir = path.resolve(__dirname, '../../uploads');
 
 if (!existsSync(uploadDir)) {
   mkdirSync(uploadDir, { recursive: true, mode: 0o755 });
-  console.log(`Created uploads directory at: ${uploadDir}`);
+  logger.info(`Created uploads directory at: ${uploadDir}`);
 }
 
 const storage = multer.diskStorage({
@@ -62,7 +64,7 @@ export const verifyUploadDir = (): boolean => {
     fs.accessSync(uploadDir, fs.constants.R_OK | fs.constants.W_OK);
     return true;
   } catch (err) {
-    console.error('Upload directory access error:', err);
+    logger.error('Upload directory access error:', err);
     return false;
   }
 };
