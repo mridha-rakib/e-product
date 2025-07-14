@@ -3,6 +3,7 @@ import statuses from "http-status";
 import { asyncHandler } from "@/middlewares/async-handler.middleware";
 import {
   createCategorySchema,
+  deleteCategorySchema,
   getCategoriesSchema,
   getCategorySchema,
   updateCategorySchema,
@@ -48,8 +49,20 @@ const updateCategory = asyncHandler(async (req: Request, res: Response) => {
   return res.status(statuses.OK).send(response);
 });
 
+const deleteCategory = asyncHandler(async (req: Request, res: Response) => {
+  const {
+    params: { id },
+  } = await zParse(deleteCategorySchema, req);
+
+  await CategoryService.deleteCategory(id);
+
+  return res.sendStatus(statuses.NO_CONTENT);
+});
+
 export const CategoryController = {
   createCategory,
   getCategories,
   getCategory,
+  updateCategory,
+  deleteCategory,
 };

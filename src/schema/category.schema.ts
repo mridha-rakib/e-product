@@ -34,3 +34,9 @@ export const updateCategorySchema = z.object({
   }),
   body: categoryGeneric.partial(),
 });
+
+export const deleteCategorySchema = z.object({
+  params: z.object({
+    id: objectIdGeneric,
+  }),
+});
