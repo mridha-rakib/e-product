@@ -9,14 +9,17 @@
 ## 🔄 Getting Started
 <ol>
  <li>Set Up Environment Variables</li>
+ 
  ```bash
- MONGO_URI:
- NODE_ENV:
- PORT: 
- BASE_PATH:
-CLOUDINARY_CLOUD_NAME
-CLOUDINARY_API_KEY
-CLOUDINARY_API_SECRET
+
+  MONGO_URI:
+  NODE_ENV:
+  PORT: 
+  BASE_PATH:
+  CLOUDINARY_CLOUD_NAME
+  CLOUDINARY_API_KEY
+  CLOUDINARY_API_SECRET
+
  ```
  <li>Run the Application</li>
  ```bash
