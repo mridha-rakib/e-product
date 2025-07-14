@@ -8,20 +8,25 @@
 
 ## 🔄 Getting Started
 
-
+🔄 Getting Started
+1. Set Up Environment Variables
+Create a .env file in the root directory and add the following variables:
  
  ```bash
 
-  MONGO_URI:
-  NODE_ENV:
-  PORT: 
-  BASE_PATH:
-  CLOUDINARY_CLOUD_NAME
-  CLOUDINARY_API_KEY
-  CLOUDINARY_API_SECRET
+MONGO_URI=your_mongodb_connection_string
+NODE_ENV=development # or "production"
+PORT=3000 # or your preferred port
+BASE_PATH=/api # optional, adjust as needed
+CLOUDINARY_CLOUD_NAME=your_cloudinary_name
+CLOUDINARY_API_KEY=your_cloudinary_key
+CLOUDINARY_API_SECRET=your_cloudinary_secret
 
 ```
-
+2. Run the Application
+Install dependencies and start the server:
+bun install  # Install dependencies
+bun dev     # Start the development server
 
 This project was created using `bun init` in bun v1.2.4. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
 
