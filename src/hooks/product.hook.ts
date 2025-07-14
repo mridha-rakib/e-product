@@ -1,6 +1,11 @@
 import { CategoryModel } from "@/models/category.model";
 import { ProductModel } from "@/models/product.model";
-import { CallbackWithoutResultAndOptionalError } from "mongoose";
+import {
+  CallbackWithoutResultAndOptionalError,
+  Query,
+  Types,
+  UpdateQuery,
+} from "mongoose";
 
 import { generateProductCode } from "@/utils/product.utils";
 
@@ -23,6 +28,24 @@ export const preSaveProductHook = async function (
   if (productExists) throw new ConflictError("Product already exists");
 
   if (!categoryExists) throw new NotFoundError("Category not found");
+
+  return next();
+};
+
+export const preUpdateProductHook = async function (
+  this: Query<IProductDocument, {}>,
+  next: CallbackWithoutResultAndOptionalError
+) {
+  const product = await ProductModel.findOne(this.getQuery()).lean();
+  if (!product) throw new NotFoundError("Product not found");
+
+  const data = this.getUpdate() as IProductDocument &
+    UpdateQuery<IProductDocument>;
+
+  if (data.category) {
+    const categoryExists = await CategoryModel.exists({ _id: data.category });
+    if (!categoryExists) throw new NotFoundError("Category not found.");
+  }
 
   return next();
 };

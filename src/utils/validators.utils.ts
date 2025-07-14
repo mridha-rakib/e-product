@@ -13,6 +13,7 @@ export const zParse = async <T extends z.ZodTypeAny>(
     });
     return result;
   } catch (error) {
+   
     if (error instanceof ZodError) {
       throw error;
     }

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { objectIdGeneric } from "./common.schema";
+import { queryEnums, queryGeneric } from "./query.schema";
 
 export const productVariantGeneric = z.object({
   name: z.string().trim().min(1).max(100),
@@ -22,7 +23,8 @@ export const productGeneric = z.object({
     .refine(
       (url) => /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/.test(url),
       "Invalid URL"
-    ),
+    )
+    .optional(),
   description: z
     .string({ message: "product description is required" })
     .trim()
@@ -33,12 +35,20 @@ export const productGeneric = z.object({
 });
 
 export const getProductsSchema = z.object({
-  query: z.object({
-    term: z.coerce.string().optional(),
-    category: z.coerce.string().optional(),
-    startPrice: z.coerce.number().positive().optional(),
-    endPrice: z.coerce.number().positive().optional(),
-  }),
+  query: z
+    .object({
+      term: z.coerce.string().optional(),
+      category: z.coerce.string().optional(),
+      startPrice: z.coerce.number().positive().optional(),
+      endPrice: z.coerce.number().positive().optional(),
+      hasEmptyStock: z.coerce.boolean().optional(),
+    })
+    .extend({
+      ...queryGeneric.shape,
+      sortBy: z
+        .enum(["term", "price", "stock", "status", ...queryEnums.sortBy])
+        .default("term"),
+    }),
 });
 
 export const getProductSchema = z.object({

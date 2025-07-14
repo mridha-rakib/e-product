@@ -7,7 +7,7 @@ import {
   IProductModel,
   IProductPaginateModel,
 } from "@/ts/interfaces/product.interface";
-import { preSaveProductHook } from "@/hooks/product.hook";
+import { preSaveProductHook, preUpdateProductHook } from "@/hooks/product.hook";
 
 const ProductSchema = new Schema<
   IProductDocument,
@@ -27,7 +27,6 @@ const ProductSchema = new Schema<
     },
     image: {
       type: String,
-      required: false,
       validate: {
         validator: function (v: any) {
           return /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/.test(v);
@@ -52,6 +51,7 @@ const ProductSchema = new Schema<
 
 ProductSchema.plugin(aggregatePaginatePlugin);
 ProductSchema.pre("save", preSaveProductHook);
+ProductSchema.pre("findOneAndUpdate", preUpdateProductHook);
 
 ProductSchema.index({ name: "text", description: "text" });
 

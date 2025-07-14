@@ -4,14 +4,19 @@ import {
   IProductPopulated,
   IProductVariant,
 } from "@/ts/interfaces/product.interface";
-import { TProductCreate, TProductUpdate } from "@/ts/types/product.type";
+import {
+  TProductCreate,
+  TProductQuery,
+  TProductUpdate,
+} from "@/ts/types/product.type";
 import { CloudinaryService } from "./cloudinary.service";
 import { logger } from "@/middlewares/pino-logger";
 import { IRequest, IUploadResult } from "@/ts/types/file-upload.type";
 import { NotFoundError } from "@/utils/error-handler.utils";
 import { ProductVariantModel } from "@/models/product-variant.model";
 import { ProductModel } from "@/models/product.model";
-import { Types } from "mongoose";
+import { PipelineStage, Types } from "mongoose";
+import { paginateConfig } from "@/config/paginate.config";
 
 export const ProductService = {
   async createProduct(product: TProductCreate) {
@@ -36,35 +41,169 @@ export const ProductService = {
     return createdProduct.toObject<IProductPopulated>();
   },
 
+  async getProducts(query: TProductQuery) {
+    const conditions: PipelineStage[] = [];
+
+    const activeQuery: Record<string, boolean> = {
+      category: !!query.category,
+      variants: !!(query.startPrice || query.endPrice || query.hasEmptyStock),
+    };
+
+    const populateDictionary: Record<string, PipelineStage[]> = {
+      category: [
+        {
+          $lookup: {
+            from: "categories",
+            localField: "category",
+            foreignField: "_id",
+            as: "category",
+          },
+        },
+        {
+          $unwind: {
+            path: "$category",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+      ],
+      variants: [
+        {
+          $lookup: {
+            from: "productvariants",
+            localField: "variants",
+            foreignField: "_id",
+            as: "variants",
+          },
+        },
+      ],
+    };
+
+    const sortByDictionary = {
+      term: { name: query.orderBy },
+      price: { "variants.price": query.orderBy },
+      stock: { "variants.stock": query.orderBy },
+      status: { "variants.status": query.orderBy },
+      createdAt: { createdAt: query.orderBy },
+      updatedAt: { updatedAt: query.orderBy },
+    } as const;
+
+    if (query.term)
+      conditions.unshift({ $match: { $text: { $search: query.term } } });
+
+    if (query.category)
+      conditions.push(...populateDictionary.category, {
+        $match: { "category.name": query.category },
+      });
+
+    if (query.startPrice || query.endPrice || query.hasEmptyStock)
+      conditions.push(...populateDictionary.variants);
+
+    if (query.startPrice || query.endPrice)
+      conditions.push({
+        $match: {
+          "variants.price": {
+            ...(query.startPrice && { $gte: query.startPrice }),
+            ...(query.endPrice && { $lte: query.endPrice }),
+          },
+        },
+      });
+
+    if (query.hasEmptyStock)
+      conditions.push({
+        $match: {
+          "variants.stock": { $lte: 0 },
+        },
+      });
+
+    const keysToPopulate = Object.keys(populateDictionary).filter(
+      (key) => !activeQuery[key]
+    );
+
+    const populateDictionaryFiltered = Object.fromEntries(
+      Object.entries(populateDictionary).filter(([key]) =>
+        keysToPopulate.includes(key)
+      )
+    );
+
+    const populateStages = Object.values(populateDictionaryFiltered).flat();
+
+    conditions.push(...populateStages);
+
+    const aggregation = ProductModel.aggregate<IProductPopulated>(conditions);
+
+    return await ProductModel.aggregatePaginate(aggregation, {
+      ...paginateConfig,
+      page: query.page,
+      limit: query.limit,
+      sort: sortByDictionary[query.sortBy],
+    });
+  },
+
+  async getProduct(productCode: IProduct["productCode"]) {
+    return await ProductModel.findOne({ productCode })
+      .populate("variants category")
+      .lean<IProductPopulated>();
+  },
+
   async updateProduct(id: IProduct["_id"], product: TProductUpdate) {
     let variants: IProduct["variants"] = [];
 
     if (product?.variants?.length) {
-      const upsertedVariants = await ProductVariantModel.bulkWrite(
-        product.variants.map(({ _id, ...variant }) => ({
-          updateOne: {
-            filter: { _id },
-            update: { $set: variant },
-            upsert: true,
-          },
-        }))
+      const variantPromises = product.variants.map(
+        async ({ _id, ...variant }) => {
+          if (_id) {
+            // Existing variant update
+            return await ProductVariantModel.findByIdAndUpdate(
+              _id,
+              { $set: variant },
+              { new: true, upsert: false }
+            );
+          } else {
+            // New variant create
+            return await ProductVariantModel.create(variant);
+          }
+        }
       );
 
-      const upsertedVariantsIds: Types.ObjectId[] = Object.values(
-        upsertedVariants.upsertedIds
-      );
+      // const upsertedVariants = await ProductVariantModel.bulkWrite(
+      //   product.variants.map(({ _id, ...variant }) => ({
+      //     updateOne: {
+      //       filter: _id ? { _id } : {},
+      //       update: { $set: variant },
+      //       upsert: true,
+      //     },
+      //   }))
+      // );
 
-      if (upsertedVariantsIds.length)
-        variants = upsertedVariantsIds.map((upsertedIds) =>
-          upsertedIds.toString()
-        );
+      const updatedVariants = await Promise.all(variantPromises);
+      variants = updatedVariants
+        .filter((v) => v !== null)
+        .map((v) => v!._id.toString());
+
+      // const upsertedVariantsIds: Types.ObjectId[] = Object.values(
+      //   upsertedVariants.upsertedIds
+      // );
+
+      // const existingVariantIds = product.variants
+      //   .filter((v) => v._id)
+      //   .map((v) => v._id!);
+
+      // variants = [
+      //   ...existingVariantIds,
+      //   ...upsertedVariantsIds.map((id) => id.toString()),
+      // ];
     }
 
-    const data = { ...product, ...(variants.length && { variants }) };
+    // const data = { ...product, ...(variants.length && { variants }) };
+    // delete data.variants;
 
-    return await ProductModel.findByIdAndUpdate(id, data, {
-      new: true,
-    })
+    const data = { ...product };
+    delete data.variants;
+    return await ProductModel.findByIdAndUpdate(
+      id,
+      { ...data, ...(variants.length && { variants }) },
+      { new: true }
+    )
       .populate("category variants")
       .lean<IProductPopulated>();
   },

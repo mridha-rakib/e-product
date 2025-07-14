@@ -4,10 +4,17 @@ import upload from "@/utils/upload.utils";
 
 const productRouter = Router();
 
-productRouter.post(
-  "/",
-  upload.single("image"),
-  ProductController.createProduct
-);
+productRouter
+  .route("/")
+  .post(upload.single("image"), ProductController.createProduct)
+  .get(ProductController.getProducts);
+productRouter.route("/:productCode").get(ProductController.getProduct);
+productRouter
+  .route("/:id")
+  .put(upload.single("image"), ProductController.updateProduct)
+  .delete(ProductController.deleteProduct);
+productRouter
+  .route("/:id/variants/:idVariant")
+  .delete(ProductController.deleteProductVariant);
 
 export default productRouter;

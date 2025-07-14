@@ -5,7 +5,10 @@ import {
   IProductVariantMethods,
   IProductVariantModel,
 } from "@/ts/interfaces/product.interface";
-import { preSaveProductVariantHook } from "@/hooks/product-variant.hook";
+import {
+  preSaveProductVariantHook,
+  preUpdateProductVariantHook,
+} from "@/hooks/product-variant.hook";
 
 const ProductVariantSchema = new Schema<
   IProductVariantDocument,
@@ -48,6 +51,10 @@ const ProductVariantSchema = new Schema<
 );
 
 ProductVariantSchema.pre("save", preSaveProductVariantHook);
+ProductVariantSchema.pre("findOneAndUpdate", preUpdateProductVariantHook);
+ProductVariantSchema.pre("updateOne", preUpdateProductVariantHook);
+ProductVariantSchema.pre("updateMany", preUpdateProductVariantHook);
+
 
 ProductVariantSchema.index({ name: "text" });
 
